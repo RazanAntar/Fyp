@@ -1,0 +1,153 @@
+/* General layout */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: url('images/logos/dashboard.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #FFFFFF;
+}
+
+/* Caption styling */
+.caption {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: #513D70;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 23% ;
+    margin-left: 50%;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Header */
+header h2 {
+    color: #1B9AD6; /* Light blue for header text */
+    text-shadow: 1px 1px 2px #406FA3;
+    text-align: center;
+
+}
+
+
+
+
+
+.dark\:bg-gray-800 {
+    background-color: #502159; /* Adjust dark mode to a matching blue */
+}
+
+.p-6 {
+    padding: 24px;
+    background-color: #406FA3; /* Another blue for interior sections */
+    border-radius: 8px;
+}
+
+
+
+/* Navbar */
+.navbar {
+    display: flex; /* Makes the navbar horizontal */
+    justify-content: flex-start; /* Align items to the left */
+    background-color: transparent; /* Light background color */
+    padding: 10px 0; /* Padding for spacing */
+    position: relative; /* Sticks to the top of the page */
+    width: 100%; /* Full width */
+    top: 0;
+    left: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow for a clean look */
+    z-index: 10; /* Ensures it stays on top */
+    overflow: hidden; /* Prevents content overflow */
+}
+
+/* Navbar links */
+.navbar a {
+  margin-left: 90px;
+  font-size: 1rem; /* Small text */
+  color: #502159; /* Purple text */
+  padding: 10px 15px; /* Spacing around links */
+  text-decoration: none; /* Removes underline */
+  text-align: center; /* Centers the text */
+  transition: background-color 0.3s, color 0.3s; /* Smooth hover effect */
+
+}
+
+/* Active link */
+.navbar a.active {
+  background-color: #3B77AC; /* Highlight active link */
+  color: white; /* White text for active links */
+  border-radius: 4px; /* Rounded corners for active link */
+}
+
+/* Hover effect */
+.navbar a:hover:not(.active) {
+  background-color: #555; /* Darker background */
+  color: white; /* White text */
+
+}
+
+
+/* Dropdown menu (hidden by default) */
+.navbar .dropdown-menu {
+  display: none;
+  flex-direction: column;
+  background-color: #f1f1f1;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.navbar .dropdown-menu a {
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.navbar .dropdown-menu a:last-child {
+  border-bottom: none;
+}
+
+/* Hamburger menu button */
+.navbar .hamburger {
+  display: none;
+  font-size: 2.0rem;
+  color: #502159;
+  cursor: pointer;
+}
+
+
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .navbar .container {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .navbar .hamburger {
+      display: block;
+  }
+
+  .navbar .navbar-links {
+      display: none;
+      width: 100%;
+  }
+
+  .navbar .dropdown-menu {
+      display: flex; /* Display dropdown menu on toggle */
+  }
+
+  .navbar.open .navbar-links {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+  }
+}
+@media screen and (max-width: 700px) {
+  .caption {
+      margin-top: 80%; /* Adjust the margin for better placement on smaller screens */
+      margin-left: 50%;
+  }
+}

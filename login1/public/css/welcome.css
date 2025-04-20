@@ -1,0 +1,66 @@
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #502159; /* Dark Purple */
+    color: white;
+    height: 70px; /* Set a smaller height */
+    padding: 5px 15px; /* Reduce padding for a compact look */
+}
+.navbar-brand img {
+    height: 50px; /* Set a smaller logo height */
+    width: auto; /* Maintain aspect ratio */
+    margin: 0; /* Remove unnecessary margins */
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.navbar a:hover {
+    color: #3B77AC; /* Lighter Blue */
+}
+
+/* Welcome Message */
+.welcome-message {
+    text-align: center;
+    color: white;
+    margin-top: 23%;
+   
+    text-shadow: 2px 2px 4px #000000;
+}
+
+.welcome-message h1 {
+    font-size: 3rem;
+    color: #513D70; /* Medium Purple */
+}
+
+
+  
+  
+
+/* Buttons */
+.btn-custom {
+    background-color: #4D5284; /* Muted Purple */
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn-custom:hover {
+    background-color: #475E91; /* Subtle Blue */
+}

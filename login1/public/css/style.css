@@ -1,0 +1,78 @@
+/* General Page Styling */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(45deg, #502159, #406FA3);
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Login Form Styling */
+form {
+    background-color: #513D70;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    width: 300px;
+}
+
+form h2 {
+    color: #1B9AD6;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #D0D0D0;
+}
+
+input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4D5284;
+    color: #ffffff;
+}
+
+input[type="email"]::placeholder, input[type="password"]::placeholder {
+    color: #9CA3AF;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #1B9AD6;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #3B77AC;
+}
+
+a {
+    text-decoration: none;
+    color: #406FA3;
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+a:hover {
+    color: #1B9AD6;
+}
