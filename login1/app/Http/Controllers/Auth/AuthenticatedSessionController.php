@@ -34,31 +34,44 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(Request $request)
     {
+        \Log::debug('Login request received', [
+            'email' => $request->email,
+            'password_present' => !empty($request->password),
+        ]);
+    
         $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
     
         if (Auth::attempt($request->only('email', 'password'))) {
-            $request->session()->regenerate(); // Regenerate session for security
+            \Log::debug('Login successful for: ' . $request->email);
     
-            \Log::info('Login SUCCESS');
-            \Log::info('Auth user right after login:', ['user' => auth()->user()]);
+            $request->session()->regenerate();
     
             $user = Auth::user();
     
-            // Redirect based on user_type
-            if ($user->user_type === 'alumni') {
-                return redirect()->route('alumni.dashboard');
+            \Log::debug('Logged in user:', [
+                'email' => $user->email,
+                'status' => $user->status,
+                'user_type' => $user->user_type
+            ]);
+    
+            if ($user->status !== 'active') {
+                Auth::logout();
+                \Log::warning('User not active: ' . $user->email);
+                return back()->withErrors([
+                    'account_inactive' => 'Your account is not yet activated.',
+                ]);
             }
     
-            return redirect()->route('dashboard'); // Default for students
+            return redirect()->route($user->user_type === 'alumni' ? 'alumni.dashboard' : 'dashboard');
         }
     
-        \Log::warning('Login FAILED');
-        
+        \Log::warning('Login failed for: ' . $request->email);
+    
         return back()->withErrors([
-            'email' => 'Invalid credentials',
+            'email' => 'Invalid credentials.',
         ]);
     }
     

@@ -96,6 +96,17 @@ public function evaluateJob(Request $request)
 }
  
 
+public function activateStudent($id)
+{
+    $student = \App\Models\User::findOrFail($id);
+
+    // Optional: Check user_type is student before activation
+  
+    $student->status = 'active';
+    $student->save();
+
+    return redirect()->back()->with('success', 'Student account activated.');
+}
 
 
 }

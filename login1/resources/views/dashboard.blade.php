@@ -23,9 +23,7 @@
     🚀 <span class="glow-text">Welcome to Our Dashboard</span> – Empower Your Journey with Us! 
 </div>
 <!-- Example button in your navigation or dashboard -->
-<a href="{{ route('users.chats') }}" class="btn btn-primary">
-    <i class="fas fa-comments"></i> Chat with Professionals
-</a>
+
 <!-- Custom Glow Effect & Animations -->
 <style>
     /* Glow Effect on Text */

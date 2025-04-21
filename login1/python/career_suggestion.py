@@ -7,7 +7,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 # ✅ Load the dataset
-data = pd.read_csv(r'C:\Users\User\Downloads\fyp-test (2)\fyp-test (2)\fyp-test\login1\skills_to_careers[2].csv', encoding='latin1')
+data = pd.read_csv(r'C:\Users\User\Desktop\Final Year Project\Fyp\login1\skills_to_careers[2].csv', encoding='latin1')
 data = data.dropna(subset=['Skills', 'Careers'])
 
 # Prepare the data

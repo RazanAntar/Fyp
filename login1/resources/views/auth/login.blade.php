@@ -196,6 +196,11 @@
 
     <h2>Welcome Back</h2>
     <p>Login to explore internships, career opportunities & more</p>
+    @if ($errors->has('account_inactive'))
+    <div class="alert alert-warning text-center small">
+        {{ $errors->first('account_inactive') }}
+    </div>
+@endif
 
     <x-auth-session-status class="mb-3 text-success" :status="session('status')" />
 
@@ -235,15 +240,7 @@
     </div>
   </div>
 
-  @if($errors->any())
-    <div class="alert alert-danger mt-4 mx-auto" style="max-width: 460px;">
-      <ul class="mb-0">
-        @foreach($errors->all() as $error)
-          <li>{{ $error }}</li>
-        @endforeach
-      </ul>
-    </div>
-  @endif
+  
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

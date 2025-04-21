@@ -138,8 +138,8 @@ public function fetchMessages(Request $request)
 
 public function fetchMessagesForStudent(Request $request)
 {
-    $receiverId = $request->input('receiver_id'); // the professional's ID
-    $studentId = auth()->id(); // or session('LoggedUserInfo') if you don't use auth()
+    $receiverId = $request->input('receiver_id');
+    $studentId = auth()->id();
 
     if (!$studentId) {
         return response()->json([
@@ -148,19 +148,41 @@ public function fetchMessagesForStudent(Request $request)
         ], 401);
     }
 
-    $messages = Chat::where(function($query) use ($studentId, $receiverId) {
+    // ✅ Fetch messages
+    $messages = Chat::where(function ($query) use ($studentId, $receiverId) {
         $query->where('sender_id', $studentId)
               ->where('receiver_id', $receiverId);
-    })->orWhere(function($query) use ($studentId, $receiverId) {
+    })->orWhere(function ($query) use ($studentId, $receiverId) {
         $query->where('sender_id', $receiverId)
               ->where('receiver_id', $studentId);
     })->orderBy('created_at', 'asc')->get();
+
+    // ✅ Mark all received messages as "seen"
+    Chat::where('sender_id', $receiverId)
+        ->where('receiver_id', $studentId)
+        ->where('seen', false)
+        ->update(['seen' => true]);
 
     return response()->json([
         'success' => true,
         'messages' => $messages,
     ]);
 }
+public function getUnreadMessageCount()
+{
+    $studentId = auth()->id();
+
+    if (!$studentId) {
+        return response()->json(['count' => 0]);
+    }
+
+    $count = Chat::where('receiver_id', $studentId)
+                 ->where('seen', false)
+                 ->count();
+
+    return response()->json(['count' => $count]);
+}
+
 
 }
 

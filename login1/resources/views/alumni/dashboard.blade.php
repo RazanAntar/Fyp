@@ -2,24 +2,21 @@
 
 @section('content')
 
-<!-- Include Bootstrap CSS if not already in your layout -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Google Fonts -->
+<!-- Google Fonts (optional if already included in layout) -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 
 <style>
     body {
         background: url('{{ asset('images/logos/rhuwelcome.jpg') }}') no-repeat center center fixed;
         background-size: cover;
+        font-family: 'Poppins', sans-serif;
         margin: 0;
         padding: 0;
-        height: 100vh;
-        font-family: 'Poppins', sans-serif;
     }
 
     .welcome-wrapper {
         backdrop-filter: blur(15px);
-        background-color: rgba(85, 0, 170, 0.6); /* stronger background */
+        background-color: rgba(85, 0, 170, 0.6);
         border-radius: 20px;
         padding: 3rem 2rem;
         box-shadow: 0 0 30px rgba(123, 44, 191, 0.4);
@@ -59,7 +56,6 @@
         animation: fadeIn 2s ease;
     }
 
-    /* Animations */
     @keyframes slideInDown {
         from { transform: translateY(-30px); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
@@ -96,11 +92,14 @@
     }
 </style>
 
-<div class="container-fluid d-flex justify-content-center align-items-center vh-100">
-    <div class="welcome-wrapper col-11 col-md-8 col-lg-6">
-        <h1 class="welcome-title">Welcome to Our Alumni Network</h1>
-        <p class="welcome-subtitle">Empower Your Journey With Us</p>
-        <div class="alumni-badge">Together, We Grow Stronger</div>
+{{-- Add padding top so navbar isn't visually covered --}}
+<div class="pt-5">
+    <div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: 85vh;">
+        <div class="welcome-wrapper col-11 col-md-8 col-lg-6">
+            <h1 class="welcome-title">Welcome to Our Alumni Network</h1>
+            <p class="welcome-subtitle">Empower Your Journey With Us</p>
+            <div class="alumni-badge">Together, We Grow Stronger</div>
+        </div>
     </div>
 </div>
 

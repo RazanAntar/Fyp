@@ -27,10 +27,12 @@ class StudentAuthController extends Controller
             'email' => $request->email,
             'user_type' => 'student',
             'password' => Hash::make($request->password),
+            'status' => 'inactive',
         ]);
 
         Auth::login($user);
 
-        return redirect('/dashboard');
+        return redirect('/')->with('status', 'Registration successful! Please wait for admin approval before logging in.');
+
     }
 }

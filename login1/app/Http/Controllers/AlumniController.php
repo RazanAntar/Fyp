@@ -7,11 +7,14 @@ use Illuminate\Http\Request;
 class AlumniController extends Controller
 {
     public function dashboard()
-    {
-        if (auth()->user()->user_type !== 'alumni') {
-            abort(403, 'Unauthorized access.');
-        }
+{
+    $user = auth()->user();
 
-        return view('alumni.dashboard');
+    if ($user->user_type !== 'alumni' || $user->status !== 'active') {
+        abort(403, 'Unauthorized access or account not approved.');
     }
+
+    return view('alumni.dashboard');
+}
+
 }

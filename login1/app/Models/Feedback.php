@@ -29,7 +29,7 @@ class Feedback extends Model
     }
     public function author()
 {
-    return $this->morphTo('author');
+    return $this->morphTo();
 }
 
 public function event()

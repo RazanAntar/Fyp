@@ -27,32 +27,65 @@
 </section>
 
 <!-- Smart Job Matching Panel -->
-<div class="bg-white p-4 rounded shadow-sm mb-4 border border-success">
-    <h4 class="text-success fw-bold mb-3">🎯 Smart Job Matching</h4>
+<!-- Smart Job Matching Panel -->
+<div class="container my-5" style="font-family: 'Poppins', sans-serif;">
+    <div class="bg-white p-5 rounded-4 shadow-sm border" style="border-color: #4A90E2;">
+        <h4 class="text-primary fw-bold mb-4 d-flex align-items-center" style="font-size: 22px; color: #003865;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#4A90E2" class="bi bi-stars me-2" viewBox="0 0 16 16">
+                <path d="M7.5 0.5a.5.5 0 0 1 .5.5v1.146l.65.342.342.65h1.146a.5.5 0 0 1 0 1h-1.146l-.342.65-.65.342V5.5a.5.5 0 0 1-1 0V4.354l-.65-.342-.342-.65H4.5a.5.5 0 0 1 0-1h1.146l.342-.65.65-.342V1a.5.5 0 0 1 .5-.5z"/>
+                <path d="M4.267 7.133a.5.5 0 0 1 .592-.592l.768.153.307-.615a.5.5 0 0 1 .897 0l.307.615.768-.153a.5.5 0 0 1 .592.592l-.153.768.615.307a.5.5 0 0 1 0 .897l-.615.307.153.768a.5.5 0 0 1-.592.592l-.768-.153-.307.615a.5.5 0 0 1-.897 0l-.307-.615-.768.153a.5.5 0 0 1-.592-.592l.153-.768-.615-.307a.5.5 0 0 1 0-.897l.615-.307-.153-.768z"/>
+            </svg>
+            Smart Job Matching
+        </h4>
 
-    <form method="POST" action="{{ route('job.match.process') }}">
-    @csrf
-    <input type="text" name="profile_input" class="form-control mb-3" placeholder="e.g. Computer Science, Python, AI" required>
-    <button type="submit" class="btn btn-success w-100">Find Matching Jobs</button>
-</form>
-
+        <form method="POST" action="{{ route('job.match.process') }}">
+            @csrf
+            <div class="mb-3">
+                <input type="text" name="profile_input" class="form-control form-control-lg rounded-pill px-4 py-3" placeholder="e.g. Computer Science, Python, AI" required>
+            </div>
+            <button type="submit" class="btn w-100 py-3 rounded-pill fw-semibold" style="background-color: #003865; color: white; font-size: 16px;">
+                Find Matching Jobs
+            </button>
+        </form>
+    </div>
 </div>
+
+
 @if (session('matches'))
     <div class="mt-4">
-        <h5 class="text-success">🔍 Top Matches Based on Your Profile</h5>
-        <ul class="list-group mt-2">
+        <h5 class="text-success fw-bold mb-3">🔍 Top Matches Based on Your Profile</h5>
+
+        @if(count(session('matches')) === 0)
+            <div class="alert alert-warning">
+                ⚠️ No matching jobs found for your profile. Try different keywords.
+            </div>
+        @else
+            <ul class="list-group shadow-sm rounded">
             @foreach (session('matches') as $match)
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>{{ $match['title'] }}</strong> at {{ $match['company'] ?? 'Unknown' }}<br>
-                        <small class="text-muted">Match Score: {{ number_format($match['score'], 2) }}</small>
-                    </div>
-                    <a href="{{ route('job.apply', ['job' => $match['id']]) }}" class="btn btn-sm btn-primary">Apply Now</a>
-                </li>
-            @endforeach
-        </ul>
+    @if ($match['score'] > 0)
+        <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+            <div>
+                <strong>{{ $match['title'] }}</strong> at {{ $match['company'] ?? 'Unknown' }}<br>
+                <small class="text-muted">Match Score: {{ number_format($match['score'], 2) }}</small>
+            </div>
+            <a href="{{ route('job.apply', ['job' => $match['id']]) }}" class="btn btn-primary btn-sm px-3">Apply Now</a>
+        </li>
+    @endif
+@endforeach
+
+            </ul>
+        @endif
     </div>
 @endif
+
+@if ($errors->any())
+    <div class="alert alert-danger mt-3">
+        @foreach ($errors->all() as $error)
+            <div>❌ {{ $error }}</div>
+        @endforeach
+    </div>
+@endif
+
 
 
 
@@ -122,6 +155,17 @@
         @endforeach
     </div>
 </section>
+@if (session('success'))
+<script>
+    Swal.fire({
+        title: '🎉 Application Submitted!',
+        text: 'We hope you get accepted!',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#003865'
+    });
+</script>
+@endif
 
 <!-- SCRIPTS -->
 <script>

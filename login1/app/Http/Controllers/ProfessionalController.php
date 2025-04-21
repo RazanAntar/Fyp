@@ -4,10 +4,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Professional;
-use App\Models\Connection;
+
 use App\Models\Admin;
 use App\Models\Chat;
 use App\Models\Job;
+use App\Models\JobActivity;
 use App\Models\User;
 use App\Models\Skill;
 use App\Events\TestNotification;
@@ -29,29 +30,27 @@ class ProfessionalController extends Controller
         return view('prof.register');
     }
     public function dashboard()
-{
-    $professionalId = Auth::guard('professional')->id();
-
-    $jobs = Job::with('applications')
+    {
+        $professionalId = Auth::guard('professional')->id();
+    
+        $jobs = Job::with([
+            'applications.student.experiences' // 🔥 Eager load student and their experiences
+        ])
         ->where('professional_id', $professionalId)
         ->where('status', 'active')
         ->get();
-
-    $pendingRequestsCount = Connection::where('connected_user_id', $professionalId)
-        ->where('connected_user_type', 'App\Models\Professional')
-        ->where('status', 'pending')
-        ->count();
-
-    $events = Event::where('professional_id', $professionalId)
-        ->where('status', 'active')
-        ->get()
-        ->map(function ($event) {
-            $event->date = Carbon::parse($event->date);
-            return $event;
-        });
-
-    return view('prof.dashboard', compact('jobs', 'events', 'pendingRequestsCount'));
-}
+    
+        $events = Event::where('professional_id', $professionalId)
+            ->where('status', 'active')
+            ->get()
+            ->map(function ($event) {
+                $event->date = Carbon::parse($event->date);
+                return $event;
+            });
+    
+        return view('prof.dashboard', compact('jobs', 'events'));
+    }
+    
 
 public function login(Request $request)
 {
@@ -151,7 +150,14 @@ public function register(Request $request)
     } catch (\Illuminate\Validation\ValidationException $e) {
         return redirect()->back()->withErrors($e->errors())->withInput();
     } catch (\Exception $e) {
-        \Log::error('Registration failed: ' . $e->getMessage());
+        \Log::error('❌ Registration failed!', [
+            'error_message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+            'input' => $request->all()
+        ]);
+        
         return back()->withErrors([
             'form' => 'Something went wrong. Please check your input and try again.'
         ])->withInput();
@@ -188,6 +194,10 @@ public function register(Request $request)
             \Log::info('Attempting to save job:', $job->toArray());
             
             if ($job->save()) {
+                JobActivity::create([
+                    'job_id' => $job->id,
+                    'professional_id' => Auth::guard('professional')->id(),
+                ]);
                 // Notification event
                 event(new TestNotification([
                     'author' => Auth::guard('professional')->user()->name,

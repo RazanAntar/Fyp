@@ -134,6 +134,25 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if (session('success'))
+<script>
+    Swal.fire({
+        title: '🎉 Application Submitted!',
+        text: '{{ session('success') }}',
+        icon: 'success',
+        confirmButtonText: 'Go to Job Search',
+        confirmButtonColor: '#003865'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "{{ route('job.search') }}";
+        }
+    });
+</script>
+@endif
+
+
 <!-- JS Scripts -->
 <script>
 function toggleAdditionalFields() {

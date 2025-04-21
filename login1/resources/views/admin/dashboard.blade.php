@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+hayda code el admin dashboard: <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,272 +11,690 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
-<!-- Font Awesome CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<!-- jQuery (if not already included) -->
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<!-- Toastr JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-<!-- Pusher JavaScript -->
-<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-  <style>
+    <style>
+        :root {
+            --deep-navy: #003865;
+            --light-blue: #dde7f4;
+            --soft-purple: #5d4177; /* Softer purple for better contrast */
+            --white: #ffffff;
+            --light-gray: #f5f7fa;
+            --sidebar-width: 260px;
+        }
+        
         body {
-            background-color: #f0f4f8;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-blue);
+            overflow-x: hidden;
         }
-        .container {
-            background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-top: 2rem;
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background-color: var(--deep-navy);
+            color: var(--white);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
         }
-        h1, h2 {
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            font-weight: 700;
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
         }
-        .notification-container {
-            margin-bottom: 2rem;
+        
+        .sidebar-header h3 {
+            color: var(--white);
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .btn-notification {
-            background-color: #3498db;
-            border-color: #3498db;
-            color: #fff;
-            padding: 0.75rem 1.5rem;
+        
+        .sidebar-menu {
+            padding: 20px 0;
+            list-style: none;
+            margin: 0;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        
+        .sidebar-menu li a {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin: 5px 10px;
+            border-radius: 6px;
+        }
+        
+        .sidebar-menu li a:hover, 
+        .sidebar-menu li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+        }
+        
+        .sidebar-menu li a i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
             font-size: 1.1rem;
-            border-radius: 8px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            color: var(--light-blue);
         }
+        
+        .sidebar-menu .badge {
+            margin-left: auto;
+            background-color: var(--light-blue);
+            color: var(--deep-navy);
+            font-weight: 600;
+            min-width: 24px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 25px;
+            min-height: 100vh;
+            background-color: var(--light-blue);
+        }
+        
+        /* Header */
+        .dashboard-header {
+            background-color: var(--white);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--soft-purple); /* Purple accent */
+        }
+        
+        .dashboard-header h2 {
+            color: var(--deep-navy);
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Notification */
+        .notification-wrapper {
+            position: relative;
+        }
+        
+        .btn-notification {
+            background-color: var(--soft-purple); /* Updated purple */
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
         .btn-notification:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
-            transform: translateY(-2px);
+            background-color: #4a3560;
         }
-        .badge {
-            margin-left: 0.5rem;
+        
+        .btn-notification .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--light-blue);
+            color: var(--deep-navy);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            border: 1px solid var(--deep-navy);
         }
-        .alert-info {
-            background-color: #e9f5ff;
-            border-color: #b6e0fe;
-            color: #2c3e50;
+        
+        .notification-dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            width: 350px;
+            background: var(--white);
             border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+            border-top: 3px solid var(--soft-purple); /* Purple accent */
         }
-        .table {
-            margin-top: 1.5rem;
-            border-radius: 10px;
+        
+        .notification-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .notification-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--light-blue);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--light-blue);
+        }
+        
+        .notification-header h5 {
+            margin: 0;
+            color: var(--deep-navy);
+            font-weight: 600;
+        }
+        
+        .notification-body {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        
+        .notification-item {
+            padding: 12px 20px;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            margin: 5px 10px;
+            border-radius: 6px;
+        }
+        
+        .notification-item:hover {
+            background-color: var(--light-blue);
+            border-left: 3px solid var(--soft-purple); /* Purple accent */
+        }
+        
+        .notification-item i {
+            margin-right: 12px;
+            color: var(--soft-purple); /* Updated purple */
+        }
+        
+        /* Cards */
+        .section-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--light-blue);
         }
+        
+        .section-header {
+            background-color: var(--deep-navy);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid var(--soft-purple); /* Purple accent */
+        }
+        
+        .section-header i {
+            color: var(--light-blue);
+        }
+        
+        .section-body {
+            padding: 20px;
+            background-color: var(--white);
+        }
+        
+        /* Tables */
+        .table-container {
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--light-blue);
+            background-color: var(--white);
+        }
+        
+        .table {
+            margin-top: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
         .table thead {
-            background-color: #3498db;
-            color: #fff;
+            background-color: var(--deep-navy);
+            color: white;
         }
-        .table th, .table td {
-            padding: 1rem;
-            vertical-align: middle;
+        
+        .table thead th {
+            padding: 12px 15px;
+            font-weight: 500;
+            border: none;
         }
+        
         .table tbody tr {
-            transition: background-color 0.3s ease;
+            transition: all 0.2s ease;
         }
+        
+        .table tbody tr:nth-child(even) {
+            background-color: var(--light-blue);
+        }
+        
         .table tbody tr:hover {
-            background-color: #f8f9fa;
+            background-color: #c9d9f0;
         }
+        
+        .table tbody td {
+            padding: 12px 15px;
+            vertical-align: middle;
+            border-top: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-badge.active {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+        
+        .status-badge.inactive {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        
+        /* Buttons */
+        .btn {
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
         .btn-success {
-            background-color: #2ecc71;
-            border-color: #2ecc71;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+            background-color: #28a745;
+            border-color: #28a745;
         }
-        .btn-success:hover {
-            background-color: #27ae60;
-            border-color: #27ae60;
+        
+        .btn-info {
+            background-color: var(--soft-purple); /* Updated purple */
+            border-color: var(--soft-purple);
+            color: white;
         }
+        
+        .btn-info:hover {
+            background-color: #4a3560;
+            border-color: #4a3560;
+        }
+        
+        /* Chat */
         .chat-container {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background-color: #f8f9fa;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid var(--light-blue);
         }
+        
         #chat-box {
             height: 300px;
-            overflow-y: scroll;
-            border: 1px solid #ddd;
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 10px;
-            margin-bottom: 1rem;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: var(--light-blue);
         }
+        
+        .message {
+            margin-bottom: 12px;
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: var(--white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .message.sent {
+            margin-left: auto;
+            background-color: var(--soft-purple); /* Updated purple */
+            color: white;
+        }
+        
+        .chat-input-container {
+            padding: 15px;
+            background-color: var(--white);
+            border-top: 1px solid var(--light-blue);
+            display: flex;
+            gap: 10px;
+        }
+        
         #chat-message {
-            width: 75%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-right: 0.5rem;
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--light-blue);
+            border-radius: 6px;
         }
+        
         #send-button {
-            padding: 0.75rem 1.5rem;
-            background-color: #3498db;
+            padding: 10px 20px;
+            background-color: var(--deep-navy);
             border: none;
-            color: #fff;
+            color: white;
+            border-radius: 6px;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--deep-navy);
+            background-color: var(--light-blue);
             border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-        #send-button:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
+        
+        .empty-state i {
+            font-size: 2rem;
+            color: var(--soft-purple); /* Updated purple */
+            margin-bottom: 10px;
         }
-        /* Add this CSS to your existing styles */
-    .toast-info .toast-message {
-        display: flex;
-        align-items: center;
-    }
-    .toast-info .toast-message i {
-        margin-right: 10px;
-    }
-    .toast-info .toast-message .notification-content {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
+        
+        /* Toggle Button for Mobile */
+        .mobile-menu-btn {
+            display: none;
+            background-color: var(--soft-purple);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .sidebar-header h3,
+            .sidebar-menu li a span,
+            .sidebar-menu .badge {
+                display: none;
+            }
+            
+            .sidebar-menu li a {
+                justify-content: center;
+                padding: 12px 0;
+                margin: 5px 0;
+            }
+            
+            .sidebar-menu li a i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .notification-dropdown {
+                width: 280px;
+                right: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Dashboard</h1>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-user-shield"></i> <span class="sidebar-title">Admin</span></h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+            <li><a href="#students"><i class="fas fa-user-graduate"></i> <span>Students</span></a></li>
+            <li><a href="#professionals"><i class="fas fa-user-tie"></i> <span>Professionals</span></a></li>
+            <li><a href="#jobs"><i class="fas fa-briefcase"></i> <span>Jobs</span></a></li>
+            <li><a href="#chat"><i class="fas fa-comments"></i> <span>Chat</span></a></li>
+            <li><a href="#" id="notification-link"><i class="fas fa-bell"></i> <span>Notifications</span> 
+                <span class="badge" id="sidebar-notification-count">{{ $inactiveProfessionals + $pendingJobsCount }}</span></a></li>
+        </ul>
+    </div>
 
-        <!-- Notification Section -->
-        <div class="notification-container">
-            <button class="btn btn-notification" id="notification-icon">
-                <i class="fas fa-bell"></i>
-                <span class="badge bg-danger" id="notification-count">{{ $inactiveProfessionals + $pendingJobsCount }}</span>
-            </button>
-            <div class="alert alert-info" id="notification-message" style="display: none;">
-                There are <strong>{{ $inactiveProfessionals }}</strong> professionals waiting for approval.<br>
-                There are <strong>{{ $pendingJobsCount }}</strong> jobs waiting for approval.
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <button class="mobile-menu-btn" id="toggle-sidebar">
+            <i class="fas fa-bars"></i> Menu
+        </button>
+        
+        <div class="dashboard-header">
+            <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+            <div class="notification-wrapper">
+                <button class="btn-notification" id="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notification-count">{{ $inactiveProfessionals + $pendingJobsCount }}</span>
+                </button>
+                <div class="notification-dropdown" id="notification-dropdown">
+                    <div class="notification-header">
+                        <h5><i class="fas fa-bell me-2"></i>Notifications</h5>
+                    </div>
+                    <div class="notification-body">
+                        <div class="notification-item">
+                            <i class="fas fa-user-tie"></i>
+                            <strong>{{ $inactiveProfessionals }}</strong> professionals waiting for approval
+                        </div>
+                        <div class="notification-item">
+                            <i class="fas fa-briefcase"></i>
+                            <strong>{{ $pendingJobsCount }}</strong> jobs waiting for approval
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <h2>Students</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if($students->isEmpty())
-                <tr><td colspan="5" class="text-center">No inactive student accounts.</td></tr>
-            @else
-                @foreach ($students as $student)
-                <tr>
-                    <td>{{ $student->id }}</td>
-                    <td>{{ $student->name }}</td>
-                    <td>{{ $student->email }}</td>
-                    <td>{{ $student->status }}</td>
-                    <td>
-                        <form action="{{ route('admin.activate-student', $student->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-success">Activate</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            @endif
-        </tbody>
-    </table>
-</div>
-        <!-- Table of Professionals -->
-        <h2>Professionals</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($professionals as $professional)
-                <tr>
-                    <td>{{ $professional->id }}</td>
-                    <td>{{ $professional->name }}</td>
-                    <td>{{ $professional->email }}</td>
-                    <td>{{ $professional->status }}</td>
-                    <td>
-                        <form action="{{ route('admin.professionals.activate', $professional->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-success">Activate</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
 
-        <!-- Table of Jobs -->
-        <h2>Jobs</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Major</th>
-                <th>Salary</th>
-                <th>Location</th>
-                <th>Requirements</th>
-                <th>Evaluate</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($jobs as $job)
-                <tr data-job-id="{{ $job->id }}">
-                <td>{{ $job->id }}</td>
-                <td>{{ $job->title }}</td>
-                <td class="job-major">{{ $job->major }}</td>
-                <td class="job-salary">{{ $job->salary }}</td>
-                <td class="job-location">{{ $job->location }}</td>
-                <td class="job-requirements">{{ $job->requirements }}</td>
-                    <td>
-                    <button onclick="evaluateJob({{ $job->id }})" class="btn btn-info">Evaluate</button>
-                        <form action="{{ route('admin.jobs.activate', $job->id) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="description" value="{{ $job->description }}">
-    <input type="hidden" name="requirements" value="{{ $job->requirements }}">
-    <input type="hidden" name="salary" value="{{ $job->salary }}">
-    <button type="button" id="evaluate-job-button" class="btn btn-info">Evaluate Job</button>
-                            <button type="submit" class="btn btn-success">Activate</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        <!-- Chat Interface -->
-        <div class="chat-container">
-            <h2>Chat with Professionals</h2>
-            <div id="chat-box">
-                <!-- Messages will be displayed here -->
+        <!-- Students Section -->
+        <div class="section-card" id="students">
+            <div class="section-header">
+                <i class="fas fa-user-graduate"></i>
+                <span>Students Management</span>
             </div>
-            <div class="d-flex">
-                <input type="text" id="chat-message" placeholder="Type a message..." />
-                <button id="send-button">Send</button>
+            <div class="section-body">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if($students->isEmpty())
+                                <tr><td colspan="5" class="empty-state">
+                                    <i class="fas fa-user-slash"></i>
+                                    <h5>No inactive student accounts</h5>
+                                </td></tr>
+                            @else
+                                @foreach ($students as $student)
+                                <tr>
+                                    <td>{{ $student->id }}</td>
+                                    <td>{{ $student->name }}</td>
+                                    <td>{{ $student->email }}</td>
+                                    <td><span class="status-badge {{ $student->status === 'active' ? 'active' : 'inactive' }}">
+                                        {{ $student->status }}
+                                    </span></td>
+                                    <td>
+                                        <form action="{{ route('admin.activate-student', $student->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-success btn-sm">Activate</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professionals Section -->
+        <div class="section-card" id="professionals">
+            <div class="section-header">
+                <i class="fas fa-user-tie"></i>
+                <span>Professionals Management</span>
+            </div>
+            <div class="section-body">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($professionals as $professional)
+                            <tr>
+                                <td>{{ $professional->id }}</td>
+                                <td>{{ $professional->name }}</td>
+                                <td>{{ $professional->email }}</td>
+                                <td><span class="status-badge {{ $professional->status === 'active' ? 'active' : 'inactive' }}">
+                                    {{ $professional->status }}
+                                </span></td>
+                                <td>
+                                    <form action="{{ route('admin.professionals.activate', $professional->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success btn-sm">Activate</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jobs Section -->
+        <div class="section-card" id="jobs">
+            <div class="section-header">
+                <i class="fas fa-briefcase"></i>
+                <span>Job Listings Management</span>
+            </div>
+            <div class="section-body">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Major</th>
+                                <th>Salary</th>
+                                <th>Location</th>
+                                <th>Requirements</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($jobs as $job)
+                            <tr data-job-id="{{ $job->id }}">
+                                <td>{{ $job->id }}</td>
+                                <td>{{ $job->title }}</td>
+                                <td class="job-major">{{ $job->major }}</td>
+                                <td class="job-salary">{{ $job->salary }}</td>
+                                <td class="job-location">{{ $job->location }}</td>
+                                <td class="job-requirements">{{ $job->requirements }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button onclick="evaluateJob({{ $job->id }})" class="btn btn-info btn-sm">Evaluate</button>
+                                        <form action="{{ route('admin.jobs.activate', $job->id) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="description" value="{{ $job->description }}">
+                                            <input type="hidden" name="requirements" value="{{ $job->requirements }}">
+                                            <input type="hidden" name="salary" value="{{ $job->salary }}">
+                                            <button type="submit" class="btn btn-success btn-sm">Activate</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="section-card" id="chat">
+            <div class="section-header">
+                <i class="fas fa-comments"></i>
+                <span>Chat with Professionals</span>
+            </div>
+            <div class="section-body p-0">
+                <div id="chat-box">
+                    <!-- Messages will be displayed here -->
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chat-message" placeholder="Type a message..." class="form-control">
+                    <button id="send-button">Send</button>
+                </div>
             </div>
         </div>
     </div>
+
     <script>
-    // Define the function in the global scope to ensure it's accessible from `onclick` attributes
+    // All original JavaScript functionality remains exactly the same
     function evaluateJob(jobId) {
         const row = document.querySelector(`tr[data-job-id="${jobId}"]`);
         const major = row.querySelector('.job-major').textContent.trim();
@@ -294,82 +712,96 @@
         })
         .then(response => {
             if (!response.ok) {
-                // If the response is not OK, parse the error message
                 return response.json().then(err => {
                     throw new Error(err.error || 'Unknown error occurred');
                 });
             }
-            return response.json(); // Parse the JSON response if successful
+            return response.json();
         })
         .then(data => {
-            // Display the evaluation results in an alert
             alert(`Evaluation Results:\nMajor Accepted: ${data.major_accepted}\nSalary Evaluation: ${data.salary_evaluation}\nLocation Evaluation: ${data.location_evaluation}\nRequirements Evaluation: ${data.requirements_evaluation}`);
         })
         .catch(error => {
-            // Display the exact error message in an alert
             console.error('Error:', error);
             alert(`Error: ${error.message}`);
         });
     }
 
-    // DOM Ready function for other initializations
     $(document).ready(function () {
-        // Notification handling
-        const notificationIcon = $('#notification-icon');
-        const notificationMessage = $('#notification-message');
-        notificationIcon.click(function () {
-            notificationMessage.toggle(); // Toggle the display of notification message
+        $('#toggle-sidebar').click(function() {
+            $('#sidebar').toggleClass('active');
+        });
+        
+        $('#notification-icon, #notification-link').click(function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $('#notification-dropdown').toggleClass('show');
+        });
+        
+        $(document).click(function() {
+            $('#notification-dropdown').removeClass('show');
+        });
+        
+        $('#notification-dropdown').click(function(e) {
+            e.stopPropagation();
         });
 
-        // Message sending via AJAX
+        $('.sidebar-menu a').on('click', function(e) {
+            if (this.hash !== "" && !$(this).is('#notification-link')) {
+                e.preventDefault();
+                $('html, body').animate({
+                    scrollTop: $(this.hash).offset().top - 20
+                }, 800);
+                $('.sidebar-menu a').removeClass('active');
+                $(this).addClass('active');
+                if ($(window).width() < 992) {
+                    $('#sidebar').removeClass('active');
+                }
+            }
+        });
+
         $('#send-button').click(function() {
             const message = $('#chat-message').val().trim();
             if (message !== '') {
                 $.post('/send-message', { message: message }, function(data) {
                     if (data.success) {
-                        $('#chat-box').append('<div>' + message + '</div>');
+                        $('#chat-box').append('<div class="message sent">' + message + '</div>');
                         $('#chat-message').val('');
                         $('#chat-box').scrollTop($('#chat-box').prop('scrollHeight'));
                     }
                 }).fail(function(xhr, status, error) {
-                    alert('Error: ' + xhr.responseText); // Debugging purposes
+                    alert('Error: ' + xhr.responseText);
                 });
             }
         });
 
-        // Load messages
         function loadMessages() {
             $.get('/get-messages', function(messages) {
-                $('#chat-box').empty(); // Clear chat box before loading messages
+                $('#chat-box').empty();
                 messages.forEach(function(msg) {
-                    $('#chat-box').append('<div>' + msg.message + '</div>');
+                    $('#chat-box').append('<div class="message ' + (msg.user === 'You' ? 'sent' : 'received') + '">' + msg.message + '</div>');
                 });
+                $('#chat-box').scrollTop($('#chat-box').prop('scrollHeight'));
             });
         }
 
-        loadMessages(); // Load messages when the page loads
+        loadMessages();
     });
 
-
-    // Only initialize if Pusher is needed on this page
     document.addEventListener('DOMContentLoaded', function() {
-        // Enable Pusher logging only in development
         Pusher.logToConsole = {{ config('app.env') === 'local' ? 'true' : 'false' }};
-        
-        // Initialize Pusher with your credentials from .env
         var pusher = new Pusher('{{ config('broadcasting.connections.pusher.key') }}', {
             cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
             encrypted: true
         });
 
-        // Subscribe to the channel
         var channel = pusher.subscribe('notification');
-
-        // Bind to the event
         channel.bind('test.notification', function(data) {
-            console.log('Received data:', data); // Debugging line
+            console.log('Received data:', data);
+            const currentCount = parseInt($('#notification-count').text());
+            $('#notification-count').text(currentCount + 1);
+            $('#sidebar-notification-count').text(currentCount + 1);
 
-            // Display Toastr notification with icons and inline content
             if (data.author && data.title) {
                 toastr.info(
                     `<div class="notification-content">
@@ -380,24 +812,15 @@
                     {
                         closeButton: true,
                         progressBar: true,
-                        timeOut: 0, // Set timeOut to 0 to make it persist until closed
-                        extendedTimeOut: 0, // Ensure the notification stays open
+                        timeOut: 5000,
+                        extendedTimeOut: 2000,
                         positionClass: 'toast-top-right',
                         enableHtml: true
                     }
                 );
-            } else {
-                console.error('Invalid data received:', data);
             }
         });
-
-        // Debugging line
-        pusher.connection.bind('connected', function() {
-            console.log('Pusher connected');
-        });
     });
-
-</script>
-
+    </script>
 </body>
 </html>

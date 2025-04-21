@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Event;
+use App\Models\User;
 use App\Models\EventParticipant;
 use App\Models\Feedback;
-use App\Models\EventQuestion;
+
 use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
@@ -47,8 +48,8 @@ class EventController extends Controller
         $hasSeat = $event->hasSeatFor($participant);
         $feedback = $event->feedbacks()->with('author')->latest()->get();
 
-        $questions = $event->questions()->with('user')->latest()->get();
-        return view('events.show', compact('event', 'feedback', 'questions','participant','hasSeat'));
+       
+        return view('events.show', compact('event', 'feedback','participant','hasSeat'));
     }
     public function bookSeat($id)
     {
@@ -79,24 +80,26 @@ class EventController extends Controller
     
     
     public function showSeating($id)
-    {
-        $event = Event::findOrFail($id);
-        $participant = $this->getCurrentParticipant();
-    
-        // Sample seat layout: A1–A5, B1–B5
-        $allSeats = collect(['A1','A2','A3','A4','A5','B1','B2','B3','B4','B5']);
-    
-        $reservedSeats = $event->seats->pluck('seat_number')->toArray();
-    
-        $seats = $allSeats->map(function ($seat) use ($reservedSeats) {
-            return (object)[
-                'seat_number' => $seat,
-                'occupied' => in_array($seat, $reservedSeats),
-            ];
-        });
-    
-        return view('events.seating', compact('event', 'seats'));
-    }
+{
+    $event = Event::with('seats')->findOrFail($id);
+    $participant = $this->getCurrentParticipant();
+
+    // Dynamically generate seat labels based on max_participants
+    $seatCount = $event->max_participants;
+    $allSeats = collect(range(1, $seatCount))->map(fn ($i) => 'Seat ' . $i);
+
+    $reservedSeats = $event->seats->pluck('seat_number')->toArray();
+
+    $seats = $allSeats->map(function ($seat) use ($reservedSeats) {
+        return (object)[
+            'seat_number' => $seat,
+            'occupied' => in_array($seat, $reservedSeats),
+        ];
+    });
+
+    return view('events.seating', compact('event', 'seats'));
+}
+
     public function reserveSeat(Request $request, $id)
 {
     $request->validate([
@@ -196,21 +199,7 @@ class EventController extends Controller
     /**
      * Allow users to ask questions about an event.
      */
-    public function askQuestion(Request $request, Event $event)
-    {
-        $request->validate([
-            'question' => 'required|string|max:1000',
-        ]);
-
-        EventQuestion::create([
-            'event_id' => $event->id,
-            'user_id' => auth()->id(),
-            'question' => $request->question,
-        ]);
-
-        return redirect()->route('events.show', $event)
-            ->with('success', 'Your question has been submitted successfully.');
-    }
+    
     protected function getCurrentParticipant()
 {
     if (Auth::guard('professional')->check()) {
@@ -218,5 +207,17 @@ class EventController extends Controller
     }
     return Auth::user(); // fallback to regular user
 }
+public function myHostedEvents()
+{
+    $professional = Auth::guard('professional')->user();
+
+    $events = Event::with(['feedbacks', 'seats.occupant']) // 👈 eager load the occupant
+        ->where('professional_id', $professional->id)
+        ->latest()
+        ->get();
+
+    return view('prof.my-events', compact('events'));
+}
+
 
 }

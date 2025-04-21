@@ -66,7 +66,7 @@ Route::post('/register/alumni', [AlumniAuthController::class, 'register']);
 Route::get('/register/student', [StudentAuthController::class, 'showRegistrationForm'])->name('register.student');
 Route::post('/register/student', [StudentAuthController::class, 'register']);
 
-Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+
 
 
 
@@ -143,7 +143,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/events/{id}/seating', [EventController::class, 'showSeating'])->name('events.seating');
 Route::post('/events/{id}/reserve-seat', [EventController::class, 'reserveSeat'])->name('events.reserveSeat');
 Route::post('/job-match-process', [JobMatchController::class, 'process'])->name('job.match.process');
-Route::post('/job-match-process', [JobMatchController::class, 'process'])->name('job.match.process');
+
 Route::prefix('admin')->group(function () {
     // Admin Authentication Routes
     Route::get('login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
@@ -172,7 +172,8 @@ Route::get('/admin/events/pending', [AdminController::class, 'showPendingEvents'
 Route::post('/admin/events/approve/{id}', [AdminController::class, 'approveEvent'])->name('events.approve');
 Route::get('/post-job', [ProfessionalController::class, 'showpostjob'])->name('professional.post_job.form');
 Route::post('/professional/post-job', [ProfessionalController::class, 'postJob'])->name('professional.post_job');
-Route::get('/professional/home', function () {
+
+Route::get('/professional/my-events', [EventController::class, 'myHostedEvents'])->name('professional.myEvents');Route::get('/professional/home', function () {
     return view('profHome');
 })->name('home');
 Route::prefix('professional')->group(function () {
@@ -294,4 +295,4 @@ Route::get('/experience/add', [MentorController::class, 'create'])->name('experi
     Route::get('/career-suggester', function () {
         return view('career_suggester');
     })->name('career.suggester');
-    
+    Route::get('/messages/unread-count', [ChatController::class, 'getUnreadMessageCount'])->name('messages.unreadCount');

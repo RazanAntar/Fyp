@@ -53,7 +53,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'password' => 'hashed', // Removed 'email_verified_at'
+            'password' => 'string', // Removed 'email_verified_at'
         ];
     }
     public function events()
@@ -120,6 +120,11 @@ public function experiences()
 public function mentorMeetings()
 {
     return $this->hasMany(Meeting::class, 'mentor_id')->with('student');
+}
+// In User.php
+public function getNameAttribute()
+{
+    return "{$this->first_name} {$this->last_name}"; // or whatever naming fields you use
 }
 
 

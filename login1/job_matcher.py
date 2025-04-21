@@ -1,36 +1,69 @@
-import pandas as pd
-import json
 import sys
+import json
+import pymysql
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-def match_jobs(user_input, job_df, top_n=5):
-    job_df['combined'] = job_df['title'].fillna('') + ' ' + \
-                         job_df['major'].fillna('') + ' ' + \
-                         job_df['requirements'].fillna('')
+def fetch_jobs_from_db():
+    try:
+        connection = pymysql.connect(
+            host="127.0.0.1",
+            user="root",
+            password="",
+            database="login",
+            charset='utf8mb4',
+            cursorclass=pymysql.cursors.DictCursor
+        )
+        query = """
+        SELECT id, title, description, company, major
+        FROM job_posting
+        WHERE status = 'active'
+        """
+        from sqlalchemy import create_engine
+        engine = create_engine("mysql+pymysql://root:@127.0.0.1/login")
+        df = pd.read_sql(query, engine)
 
-    data = [user_input] + job_df['combined'].tolist()
-    tfidf = TfidfVectorizer(stop_words='english')
-    tfidf_matrix = tfidf.fit_transform(data)
-    similarity_scores = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten()
+        connection.close()
+        return df
+    except Exception as e:
+        raise Exception(f"Database connection failed: {e}")
 
-    top_indices = similarity_scores.argsort()[::-1][:top_n]
-    matches = job_df.iloc[top_indices].copy()
-    matches['score'] = similarity_scores[top_indices]
+def match_jobs(student_profile, job_df, top_n=5):
+    # Clean and prepare text
+    job_df = job_df.fillna('')
+    job_df = job_df[
+        (job_df['title'].str.lower().str.strip() != 'title') &
+        (job_df['description'].str.lower().str.strip() != 'description') &
+        (job_df['company'].str.lower().str.strip() != 'company') &
+        (job_df['major'].str.lower().str.strip() != 'major')
+    ]
+    job_df['text'] = job_df['title'] + ' ' + job_df['description']
+    job_df = job_df[job_df['text'].str.strip() != '']
 
-    return matches[['id', 'title', 'company', 'score']].to_dict(orient='records')
+    if job_df.empty:
+        return []
+
+    # TF-IDF similarity
+    vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = vectorizer.fit_transform(job_df['text'])
+    student_vector = vectorizer.transform([student_profile])
+
+    job_df['score'] = cosine_similarity(student_vector, tfidf_matrix).flatten()
+    top_matches = job_df.sort_values(by='score', ascending=False).head(top_n)
+
+    return top_matches[['id', 'title', 'company', 'major', 'score']].to_dict(orient='records')
 
 def main():
-    if len(sys.argv) < 3:
-        print(json.dumps({"error": "Usage: python job_matcher.py <input_string> <csv_file>"}))
+    if len(sys.argv) < 2:
+        print(json.dumps({"error": "Missing student profile input"}))
         sys.exit(1)
 
-    input_text = sys.argv[1]
-    csv_file = sys.argv[2]
-    
+    student_profile = sys.argv[1]
+
     try:
-        job_df = pd.read_csv(csv_file)
-        matches = match_jobs(input_text, job_df)
+        job_df = fetch_jobs_from_db()
+        matches = match_jobs(student_profile, job_df)
         print(json.dumps(matches))
     except Exception as e:
         print(json.dumps({"error": str(e)}))

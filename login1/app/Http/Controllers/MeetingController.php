@@ -11,7 +11,7 @@ class MeetingController extends Controller
     {
         $request->validate([
             'mentor_id' => 'required|exists:users,id',
-            'meeting_time' => 'required', // Format: YYYY-MM-DD HH:MM
+            'meeting_time' => 'required',
         ]);
     
         if ($request->mentor_id == auth()->id()) {
@@ -20,7 +20,6 @@ class MeetingController extends Controller
     
         [$date, $time] = explode(' ', $request->meeting_time);
     
-        // ❌ Check if this student already has a meeting at this time with this mentor
         $existingMeeting = Meeting::where('student_id', auth()->id())
             ->where('mentor_id', $request->mentor_id)
             ->where('meeting_date', $date)
@@ -31,8 +30,18 @@ class MeetingController extends Controller
             return back()->with('error', 'You already have a meeting scheduled at this time with this mentor.');
         }
     
-        // ✅ Proceed with booking (also book the time slot here if you wish)
-        // ...
+        // ✅ Save the meeting
+        Meeting::create([
+            'student_id' => auth()->id(),
+            'mentor_id' => $request->mentor_id,
+            'meeting_date' => $date,
+            'meeting_time' => $time,
+            'status' => 'pending',
+        ]);
+    
+        return back()->with('success', 'Your meeting has been successfully scheduled!');
     }
+    
+    
 
 }

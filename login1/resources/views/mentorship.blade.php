@@ -103,6 +103,31 @@
         <div class="alert alert-danger mt-3">{{ session('error') }}</div>
     @endif
 </div>
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if (session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: '✅ Meeting Confirmed!',
+        text: '{{ session('success') }}',
+        confirmButtonColor: '#003865'
+    });
+</script>
+@endif
+
+@if (session('error'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: '⚠️ Error',
+        text: '{{ session('error') }}',
+        confirmButtonColor: '#dc3545'
+    });
+</script>
+@endif
+
 
 @push('scripts')
 <script>
